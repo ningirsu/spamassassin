@@ -270,6 +270,11 @@ $have_sha ? {
   check for both Net::DNS and Net::DNS::Nameserver.  However, 
   Net::DNS::Nameserver is only used in make test as of June 2014.',
 },
+{
+  module => 'Prelude',
+  version => 0,
+  desc => 'Prelude is necessary to connect spamassassin to a prelude-manager.',
+},
 );
 
 my @BINARIES = ();

@@ -393,6 +393,7 @@ GetOptions(
   'paranoid!'                => \$opt{'paranoid'},
   'P'                        => \$opt{'paranoid'},
   'pidfile|r=s'              => \$opt{'pidfile'},
+  'prelude=s'                => \$opt{'prelude'},
   'port|p=s'                 => \$opt{'port'},
   'Q'                        => \$opt{'setuid-with-sql'},
   'q'                        => \$opt{'sql-config'},
@@ -612,6 +613,11 @@ elsif ($log_facility eq 'file') {
     # file method failed
     $log_facility = 'stderr';
   }
+}
+
+if ($opt{prelude}){
+  use Mail::SpamAssassin::Prelude;
+  prelude_start($opt{prelude});
 }
 
 ### End initialization of logging ##########################
@@ -2030,6 +2036,10 @@ sub check {
   my $log = sprintf("spamd: result: %s %2d - %s %s", $yorn, $score,
 	       $tests, join(",", @extra));
   info($log);
+
+  if ($opt{prelude} && $status->is_spam()) {
+    log_prelude_alert($status, $tests, $scantime, $actual_length, $current_user, $>, $msg_threshold, $mail);
+  }
 
   # bug 3808: log scan results to any listening plugins, too
   $spamtest->call_plugins("log_scan_result", { result => $log });
